@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#111827">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Twilight Routine | Plan for Tomorrow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="app-header">
+      <div class="header-left">
+        <h1>Twilight Routine</h1>
+        <p id="tomorrowDateDisplay">Loading tomorrow's date...</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-secondary" id="themeBtn" type="button" aria-label="Toggle color theme">☼ Theme</button>
+        <button class="btn btn-secondary" id="backupBtn" type="button">Save backup</button>
+        <button class="btn btn-secondary" id="restoreBtn" type="button">Restore</button>
+        <input id="restoreInput" type="file" accept="application/json,.json" hidden>
+        <button class="btn btn-secondary" id="calendarBtn" type="button">Calendar</button>
+        <button class="btn btn-secondary" id="copyMdBtn" type="button">Copy plan</button>
+        <button class="btn" id="printBtn" type="button">Print / PDF</button>
+        <button class="btn btn-ghost" id="clearBtn" type="button">Reset</button>
+      </div>
+    </header>
+
+    <section class="progress-strip" aria-label="Plan progress">
+      <div>
+        <span class="eyebrow">Plan readiness</span>
+        <strong id="progressLabel">0% ready</strong>
+      </div>
+      <div class="progress-track"><span id="progressBar"></span></div>
+      <span class="progress-detail" id="progressDetail">Start with your one thing</span>
+    </section>
+
+    <div class="grid-container">
+      <div>
+        <section class="card hero-card">
+          <div class="card-header">
+            <div>
+              <span class="eyebrow">North star</span>
+              <h2>The One Thing</h2>
+            </div>
+            <span class="hint">The highest-impact priority</span>
+          </div>
+          <div class="one-thing-box">
+            <input id="oneThingInput" type="text" placeholder="What would make tomorrow a win?" maxlength="140">
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <span class="eyebrow">Keep it focused</span>
+              <h2>Top 3 Secondary Tasks</h2>
+            </div>
+            <span class="hint">Support the main goal</span>
+          </div>
+          <div class="task-list">
+            <label class="task-row"><span class="num">01</span><input class="sec-task" type="text" placeholder="A meaningful supporting task" maxlength="120"></label>
+            <label class="task-row"><span class="num">02</span><input class="sec-task" type="text" placeholder="A meaningful supporting task" maxlength="120"></label>
+            <label class="task-row"><span class="num">03</span><input class="sec-task" type="text" placeholder="A meaningful supporting task" maxlength="120"></label>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <span class="eyebrow">Shape the day</span>
+              <h2>Tomorrow's Time-Blocking</h2>
+            </div>
+            <button class="btn-sm btn-secondary" id="applySuggestedFlowBtn" type="button">Fill suggested flow</button>
+          </div>
+          <div class="timeline" id="timeGrid"></div>
+        </section>
+      </div>
+
+      <aside>
+        <section class="card">
+          <div class="card-header">
+            <div><span class="eyebrow">Set the stage</span><h2>Evening Launchpad</h2></div>
+          </div>
+          <div class="checklist">
+            <label class="check-item"><input id="h_clothes" type="checkbox"> Pick & lay out clothes tonight</label>
+            <label class="check-item"><input id="h_desk" type="checkbox"> Clear desk of today's clutter</label>
+            <label class="check-item"><input id="h_bag" type="checkbox"> Pack work bag, tech gear & keys</label>
+            <label class="check-item"><input id="h_water" type="checkbox"> Set out bedside water bottle</label>
+            <label class="check-item"><input id="h_phone" type="checkbox"> Put phone to charge outside reach</label>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
+            <div><span class="eyebrow">Build momentum</span><h2>Quick Wins</h2></div>
+            <span class="hint">&lt; 5 mins each</span>
+          </div>
+          <div class="quick-win-input-group">
+            <input id="quickWinInput" type="text" placeholder="Add a tiny task" maxlength="120">
+            <button class="btn-sm" id="addQuickWinBtn" type="button">Add</button>
+          </div>
+          <ul class="quick-win-list" id="quickWinsList"></ul>
+          <p class="empty-state" id="quickWinsEmpty">Small wins make starting easier.</p>
+          <div class="focus-tool">
+            <div>
+              <span class="eyebrow">Start small</span>
+              <strong id="timerDisplay">05:00</strong>
+            </div>
+            <div class="focus-actions">
+              <button class="btn-sm" id="timerBtn" type="button">Start focus</button>
+              <button class="btn-sm btn-secondary" id="timerResetBtn" type="button">Reset timer</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
+            <div><span class="eyebrow">Clear your head</span><h2>Brain Dump</h2></div>
+            <button class="btn-sm btn-secondary" id="turnDumpToTasksBtn" type="button">Convert to wins</button>
+          </div>
+          <textarea id="brainDumpArea" rows="7" placeholder="Anything competing for your attention can live here..."></textarea>
+        </section>
+
+        <section class="card reset-card">
+          <div class="card-header">
+            <div><span class="eyebrow">For looping thoughts</span><h2>Overthinking Reset</h2></div>
+            <span class="hint">Name it. Shrink it. Start.</span>
+          </div>
+          <p class="reset-intro">Move the worry out of your head and give tomorrow one small, controllable step.</p>
+          <label class="field-label" for="worryInput">What are you overthinking?</label>
+          <textarea id="worryInput" rows="3" placeholder="I keep thinking about..."></textarea>
+          <label class="field-label" for="controlInput">What is in your control tomorrow?</label>
+          <input class="reset-input" id="controlInput" type="text" maxlength="160" placeholder="One thing you can influence">
+          <label class="field-label" for="nextStepInput">What is the smallest next step?</label>
+          <input class="reset-input" id="nextStepInput" type="text" maxlength="120" placeholder="Make it doable in 5 minutes">
+          <div class="reset-actions">
+            <button class="btn" id="parkThoughtBtn" type="button">Park thought & add next step</button>
+            <button class="btn-sm btn-secondary" id="clearResetBtn" type="button">Clear reset</button>
+          </div>
+          <p class="reset-confirmation" id="resetConfirmation" aria-live="polite"></p>
+        </section>
+
+        <section class="card quote-card">
+          <div class="card-header">
+            <div><span class="eyebrow">A gentler perspective</span><h2>Daily Quote</h2></div>
+            <button class="btn-sm btn-secondary" id="newQuoteBtn" type="button">New quote</button>
+          </div>
+          <blockquote id="quoteText"></blockquote>
+          <p class="quote-author" id="quoteAuthor"></p>
+          <div class="quote-actions">
+            <button class="btn-sm" id="saveQuoteBtn" type="button">Save favorite</button>
+            <span class="quote-status" id="quoteStatus" aria-live="polite"></span>
+          </div>
+        </section>
+
+        <section class="card gratitude-card">
+          <div class="card-header">
+            <div><span class="eyebrow">Close the day gently</span><h2>3 Things I'm Grateful For</h2></div>
+            <span class="hint">A quiet moment for tonight</span>
+          </div>
+          <div class="gratitude-list">
+            <input class="gratitude-input" id="gratitude1" type="text" maxlength="140" placeholder="Something, someone, or a moment">
+            <input class="gratitude-input" id="gratitude2" type="text" maxlength="140" placeholder="Something that went well">
+            <input class="gratitude-input" id="gratitude3" type="text" maxlength="140" placeholder="Something you want to appreciate">
+          </div>
+        </section>
+      </aside>
+    </div>
+    <p class="save-status" id="saveStatus" aria-live="polite">Saved locally in your browser</p>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
