@@ -12,9 +12,7 @@ Deploying via VS Code & GitHub Pages
 2.	Run git init, git add ., and git commit -m "Initial commit".
 3.	Create a new GitHub repository and push your branch:
 
-git remote add origin https://github.com/<your-username>/<repo-name>.git
 
-git branch -M main
 
 git push -u origin main
 
