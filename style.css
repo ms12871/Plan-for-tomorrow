@@ -80,6 +80,41 @@ body[data-theme="light"] {
   letter-spacing: -0.02em;
 }
 
+.brand {
+  align-items: center;
+  color: inherit;
+  display: flex;
+  gap: 12px;
+  text-decoration: none;
+}
+
+.brand:focus-visible {
+  border-radius: 10px;
+  outline: 2px solid var(--accent);
+  outline-offset: 5px;
+}
+
+.brand-mark {
+  flex: 0 0 auto;
+  height: 48px;
+  width: 48px;
+}
+
+.logo-sky {
+  fill: var(--surface-alt);
+  stroke: var(--primary);
+  stroke-width: 1.5;
+}
+
+.logo-moon {
+  fill: var(--accent);
+}
+
+.logo-horizon {
+  stroke: var(--primary);
+  stroke-width: 2;
+}
+
 .header-left p {
   color: var(--text-muted);
   font-size: 14px;
@@ -506,6 +541,8 @@ textarea#brainDumpArea:focus {
 
   .header-left h1 { font-size: 26px; }
   .header-left p { font-size: 13px; }
+  .brand { gap: 10px; }
+  .brand-mark { height: 42px; width: 42px; }
 
   .header-actions {
     display: grid;

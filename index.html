@@ -12,12 +12,23 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body id="top">
   <main class="app-shell">
     <header class="app-header">
       <div class="header-left">
-        <h1>Twilight Routine</h1>
-        <p id="tomorrowDateDisplay">Loading tomorrow's date...</p>
+        <a class="brand" href="#top" aria-label="Go to the top of Twilight Routine">
+          <svg class="brand-mark" viewBox="0 0 48 48" role="img" aria-labelledby="logoTitle logoDesc">
+            <title id="logoTitle">Twilight Routine logo</title>
+            <desc id="logoDesc">A crescent moon rising over a calm horizon</desc>
+            <circle class="logo-sky" cx="24" cy="24" r="22"></circle>
+            <path class="logo-moon" d="M29.5 8.5a15.5 15.5 0 1 0 9.8 27.5A16 16 0 1 1 29.5 8.5Z"></path>
+            <path class="logo-horizon" d="M10 31.5h28M14 36h20" fill="none" stroke-linecap="round"></path>
+          </svg>
+          <div>
+            <h1>Twilight Routine</h1>
+            <p id="tomorrowDateDisplay">Loading tomorrow's date...</p>
+          </div>
+        </a>
       </div>
       <div class="header-actions">
         <button class="btn btn-secondary" id="themeBtn" type="button" aria-label="Toggle color theme">Theme</button>
