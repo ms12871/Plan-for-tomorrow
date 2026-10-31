@@ -47,14 +47,14 @@ body {
 }
 
 body[data-theme="light"] {
-  --bg: #e9edf3;
-  --surface: #f7f8fa;
-  --surface-alt: #e7ebf1;
-  --border: #cbd3df;
-  --text: #1d2738;
-  --text-muted: #58667a;
-  --shadow: 0 16px 38px rgba(31, 45, 70, .08);
-  background: radial-gradient(circle at 8% 0%, rgba(139, 124, 246, .09), transparent 30rem), var(--bg);
+  --bg: #d9d4ca;
+  --surface: #ebe7df;
+  --surface-alt: #d6d1c7;
+  --border: #b9b1a5;
+  --text: #292a2b;
+  --text-muted: #5f5b55;
+  --shadow: 0 14px 34px rgba(55, 48, 39, .09);
+  background: radial-gradient(circle at 8% 0%, rgba(139, 124, 246, .05), transparent 30rem), var(--bg);
 }
 
 .app-shell {
