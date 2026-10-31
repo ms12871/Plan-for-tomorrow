@@ -50,6 +50,7 @@ function buildTimeGrid() {
     const input = document.createElement('input');
     input.type = 'text';
     input.className = 'time-input';
+    input.setAttribute('aria-label', `Plan for ${hour}`);
     input.placeholder = 'Focus block, meeting, transit, or rest...';
     input.value = appState.timeBlocks[hour] || '';
     input.addEventListener('input', (e) => {
@@ -89,6 +90,7 @@ function renderQuickWins() {
     const remove = document.createElement('button');
     remove.type = 'button';
     remove.title = 'Remove';
+    remove.setAttribute('aria-label', `Remove quick win: ${win}`);
     remove.textContent = '×';
     li.append(label, remove);
     remove.addEventListener('click', () => {
@@ -107,7 +109,7 @@ function saveState() {
   document.getElementById('saveStatus').textContent = 'Saved locally just now';
   clearTimeout(saveState.statusTimer);
   saveState.statusTimer = setTimeout(() => {
-    document.getElementById('saveStatus').textContent = 'Saved locally in your browser';
+    document.getElementById('saveStatus').textContent = 'Made Love with Zafar';
   }, 1800);
   updateProgress();
 }

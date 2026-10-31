@@ -118,6 +118,20 @@ body[data-theme="light"] {
   background: var(--primary-hover);
 }
 
+.btn:focus-visible,
+.btn-sm:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  box-shadow: 0 0 0 3px rgba(109, 214, 192, .35);
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.btn:disabled {
+  cursor: wait;
+  opacity: .65;
+}
+
 .btn-secondary {
   background: var(--surface-alt);
   color: var(--text);
@@ -146,6 +160,7 @@ body[data-theme="light"] {
   display: grid;
   grid-template-columns: 1.4fr 1fr;
   gap: 20px;
+  min-width: 0;
 }
 
 @media (max-width: 900px) {
@@ -161,6 +176,7 @@ body[data-theme="light"] {
   padding: 18px;
   margin-bottom: 20px;
   box-shadow: var(--shadow);
+  min-width: 0;
 }
 
 .card-header {
@@ -220,13 +236,24 @@ body[data-theme="light"] {
   border: 1px solid var(--border);
   padding: 14px 16px;
   border-radius: 10px;
-  color: #fff;
+  color: var(--text);
   font-size: 16px;
   outline: none;
   font-weight: 500;
 }
 
 input::placeholder, textarea::placeholder { color: #7886a0; }
+
+body[data-theme="light"] input,
+body[data-theme="light"] textarea {
+  color: var(--text);
+}
+
+body[data-theme="light"] input::placeholder,
+body[data-theme="light"] textarea::placeholder {
+  color: #625e58;
+  opacity: 1;
+}
 
 .one-thing-box input:focus {
   border-color: var(--accent);
@@ -273,6 +300,15 @@ input::placeholder, textarea::placeholder { color: #7886a0; }
   max-height: 480px;
   overflow-y: auto;
   padding-right: 6px;
+}
+
+.timeline::-webkit-scrollbar {
+  width: 8px;
+}
+
+.timeline::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 999px;
 }
 
 .time-row {
@@ -475,7 +511,18 @@ textarea#brainDumpArea:focus {
     display: grid;
     gap: 8px;
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    min-width: 0;
     width: 100%;
+  }
+
+  .header-actions .btn {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+
+  .header-actions .btn-ghost {
+    grid-column: 1 / -1;
   }
 
   .btn, .btn-sm {
@@ -515,9 +562,10 @@ textarea#brainDumpArea:focus {
     margin-bottom: 12px;
   }
 
+  .card-header > * { min-width: 0; }
   .card-header .hint { display: none; }
-  .card-header h2 { font-size: 15px; }
-  .card-header .btn-sm { flex-shrink: 0; min-height: 40px; }
+  .card-header h2 { font-size: 15px; line-height: 1.25; }
+  .card-header .btn-sm { flex-shrink: 0; min-height: 40px; max-width: 48%; white-space: normal; }
 
   .one-thing-box input,
   .task-row input,
@@ -559,6 +607,7 @@ textarea#brainDumpArea:focus {
 
   .quick-win-input-group { gap: 7px; }
   .quick-win-input-group input { min-width: 0; min-height: 44px; }
+  .quick-win-input-group .btn-sm { flex: 0 0 58px; }
   .quick-win-list { gap: 6px; }
   .quick-win-list li { min-height: 46px; padding: 7px 10px; }
   .quick-win-list li button { min-height: 38px; min-width: 38px; }
@@ -570,6 +619,8 @@ textarea#brainDumpArea:focus {
 
   .app-shell { padding-bottom: 12px; }
   .save-status { padding-bottom: 8px; }
+  .form-status { padding: 0 8px 8px; }
+  .reset-actions .btn { min-width: 0; width: 100%; }
 }
 
 @media (max-width: 680px) {

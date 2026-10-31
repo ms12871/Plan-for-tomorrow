@@ -51,7 +51,7 @@
             <span class="hint">The highest-impact priority</span>
           </div>
           <div class="one-thing-box">
-            <input id="oneThingInput" type="text" placeholder="What would make tomorrow a win?" maxlength="140">
+            <input id="oneThingInput" type="text" aria-label="The one thing for tomorrow" placeholder="What would make tomorrow a win?" maxlength="140">
           </div>
         </section>
 
@@ -64,9 +64,9 @@
             <span class="hint">Support the main goal</span>
           </div>
           <div class="task-list">
-            <label class="task-row"><span class="num">01</span><input class="sec-task" type="text" placeholder="A meaningful supporting task" maxlength="120"></label>
-            <label class="task-row"><span class="num">02</span><input class="sec-task" type="text" placeholder="A meaningful supporting task" maxlength="120"></label>
-            <label class="task-row"><span class="num">03</span><input class="sec-task" type="text" placeholder="A meaningful supporting task" maxlength="120"></label>
+            <label class="task-row"><span class="num">01</span><input class="sec-task" type="text" aria-label="Secondary task 1" placeholder="A meaningful supporting task" maxlength="120"></label>
+            <label class="task-row"><span class="num">02</span><input class="sec-task" type="text" aria-label="Secondary task 2" placeholder="A meaningful supporting task" maxlength="120"></label>
+            <label class="task-row"><span class="num">03</span><input class="sec-task" type="text" aria-label="Secondary task 3" placeholder="A meaningful supporting task" maxlength="120"></label>
           </div>
         </section>
 
@@ -102,7 +102,7 @@
             <span class="hint">&lt; 5 mins each</span>
           </div>
           <div class="quick-win-input-group">
-            <input id="quickWinInput" type="text" placeholder="Add a tiny task" maxlength="120">
+            <input id="quickWinInput" type="text" aria-label="New quick win" placeholder="Add a tiny task" maxlength="120">
             <button class="btn-sm" id="addQuickWinBtn" type="button">Add</button>
           </div>
           <ul class="quick-win-list" id="quickWinsList"></ul>
@@ -114,7 +114,7 @@
             <div><span class="eyebrow">Clear your head</span><h2>Brain Dump</h2></div>
             <button class="btn-sm btn-secondary" id="turnDumpToTasksBtn" type="button">Convert to wins</button>
           </div>
-          <textarea id="brainDumpArea" rows="7" placeholder="Anything competing for your attention can live here..."></textarea>
+          <textarea id="brainDumpArea" rows="7" aria-label="Brain dump" placeholder="Anything competing for your attention can live here..."></textarea>
         </section>
 
         <section class="card reset-card">
@@ -124,11 +124,11 @@
           </div>
           <p class="reset-intro">Move the worry out of your head and give tomorrow one small, controllable step.</p>
           <label class="field-label" for="worryInput">What are you overthinking?</label>
-          <textarea id="worryInput" rows="3" placeholder="I keep thinking about..."></textarea>
+          <textarea id="worryInput" rows="3" aria-label="What you are overthinking" placeholder="I keep thinking about..."></textarea>
           <label class="field-label" for="controlInput">What is in your control tomorrow?</label>
-          <input class="reset-input" id="controlInput" type="text" maxlength="160" placeholder="One thing you can influence">
+          <input class="reset-input" id="controlInput" type="text" aria-label="What is in your control tomorrow" maxlength="160" placeholder="One thing you can influence">
           <label class="field-label" for="nextStepInput">What is the smallest next step?</label>
-          <input class="reset-input" id="nextStepInput" type="text" maxlength="120" placeholder="Make it doable in 5 minutes">
+          <input class="reset-input" id="nextStepInput" type="text" aria-label="Smallest next step" maxlength="120" placeholder="Make it doable in 5 minutes">
           <div class="reset-actions">
             <button class="btn" id="parkThoughtBtn" type="button">Park thought & add next step</button>
             <button class="btn-sm btn-secondary" id="clearResetBtn" type="button">Clear reset</button>
@@ -138,7 +138,7 @@
 
       </aside>
     </div>
-    <p class="save-status" id="saveStatus" aria-live="polite">Saved locally in your browser</p>
+    <p class="save-status" id="saveStatus" aria-live="polite">Made Love with Zafar</p>
     <p class="form-status" id="formStatus" aria-live="polite"></p>
   </main>
   <script src="app.js"></script>
