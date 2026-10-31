@@ -17,13 +17,7 @@
     <header class="app-header">
       <div class="header-left">
         <a class="brand" href="#top" aria-label="Go to the top of Twilight Routine">
-          <svg class="brand-mark" viewBox="0 0 48 48" role="img" aria-labelledby="logoTitle logoDesc">
-            <title id="logoTitle">Twilight Routine logo</title>
-            <desc id="logoDesc">A crescent moon rising over a calm horizon</desc>
-            <circle class="logo-sky" cx="24" cy="24" r="22"></circle>
-            <path class="logo-moon" d="M29.5 8.5a15.5 15.5 0 1 0 9.8 27.5A16 16 0 1 1 29.5 8.5Z"></path>
-            <path class="logo-horizon" d="M10 31.5h28M14 36h20" fill="none" stroke-linecap="round"></path>
-          </svg>
+          <img class="brand-mark pigeon-photo" src="peace-pigeon-logo-transparent.png" alt="White peace pigeon in flight">
           <div>
             <h1>Twilight Routine</h1>
             <p id="tomorrowDateDisplay">Loading tomorrow's date...</p>
@@ -37,6 +31,7 @@
         <input id="restoreInput" type="file" accept="application/json,.json" hidden>
         <button class="btn btn-secondary" id="formSubmitBtn" type="button">Save online</button>
         <button class="btn btn-secondary" id="copyMdBtn" type="button">Copy plan</button>
+        <button class="btn btn-secondary" id="yesterdayBtn" type="button">Yesterday</button>
         <button class="btn" id="printBtn" type="button">Print / PDF</button>
         <button class="btn btn-ghost" id="clearBtn" type="button">Reset</button>
       </div>
@@ -62,7 +57,10 @@
             <span class="hint">The highest-impact priority</span>
           </div>
           <div class="one-thing-box">
-            <input id="oneThingInput" type="text" aria-label="The one thing for tomorrow" placeholder="What would make tomorrow a win?" maxlength="140">
+            <label class="checkable-input">
+              <input id="oneThingDone" type="checkbox" aria-label="Mark the one thing complete">
+              <input id="oneThingInput" type="text" aria-label="The one thing for tomorrow" placeholder="What would make tomorrow a win?" maxlength="140">
+            </label>
           </div>
         </section>
 
@@ -75,9 +73,9 @@
             <span class="hint">Support the main goal</span>
           </div>
           <div class="task-list">
-            <label class="task-row"><span class="num">01</span><input class="sec-task" type="text" aria-label="Secondary task 1" placeholder="A meaningful supporting task" maxlength="120"></label>
-            <label class="task-row"><span class="num">02</span><input class="sec-task" type="text" aria-label="Secondary task 2" placeholder="A meaningful supporting task" maxlength="120"></label>
-            <label class="task-row"><span class="num">03</span><input class="sec-task" type="text" aria-label="Secondary task 3" placeholder="A meaningful supporting task" maxlength="120"></label>
+            <label class="task-row"><input class="task-check" type="checkbox" aria-label="Mark secondary task 1 complete"><span class="num">01</span><input class="sec-task" type="text" aria-label="Secondary task 1" placeholder="A meaningful supporting task" maxlength="120"></label>
+            <label class="task-row"><input class="task-check" type="checkbox" aria-label="Mark secondary task 2 complete"><span class="num">02</span><input class="sec-task" type="text" aria-label="Secondary task 2" placeholder="A meaningful supporting task" maxlength="120"></label>
+            <label class="task-row"><input class="task-check" type="checkbox" aria-label="Mark secondary task 3 complete"><span class="num">03</span><input class="sec-task" type="text" aria-label="Secondary task 3" placeholder="A meaningful supporting task" maxlength="120"></label>
           </div>
         </section>
 
@@ -96,60 +94,32 @@
       <aside>
         <section class="card">
           <div class="card-header">
-            <div><span class="eyebrow">Set the stage</span><h2>Evening Launchpad</h2></div>
-          </div>
-          <div class="checklist">
-            <label class="check-item"><input id="h_clothes" type="checkbox"> Pick & lay out clothes tonight</label>
-            <label class="check-item"><input id="h_desk" type="checkbox"> Clear desk of today's clutter</label>
-            <label class="check-item"><input id="h_bag" type="checkbox"> Pack work bag, tech gear & keys</label>
-            <label class="check-item"><input id="h_water" type="checkbox"> Set out bedside water bottle</label>
-            <label class="check-item"><input id="h_phone" type="checkbox"> Put phone to charge outside reach</label>
-          </div>
-        </section>
-
-        <section class="card">
-          <div class="card-header">
-            <div><span class="eyebrow">Build momentum</span><h2>Quick Wins</h2></div>
-            <span class="hint">&lt; 5 mins each</span>
-          </div>
-          <div class="quick-win-input-group">
-            <input id="quickWinInput" type="text" aria-label="New quick win" placeholder="Add a tiny task" maxlength="120">
-            <button class="btn-sm" id="addQuickWinBtn" type="button">Add</button>
-          </div>
-          <ul class="quick-win-list" id="quickWinsList"></ul>
-          <p class="empty-state" id="quickWinsEmpty">Small wins make starting easier.</p>
-        </section>
-
-        <section class="card">
-          <div class="card-header">
             <div><span class="eyebrow">Clear your head</span><h2>Brain Dump</h2></div>
-            <button class="btn-sm btn-secondary" id="turnDumpToTasksBtn" type="button">Convert to wins</button>
           </div>
           <textarea id="brainDumpArea" rows="7" aria-label="Brain dump" placeholder="Anything competing for your attention can live here..."></textarea>
         </section>
 
-        <section class="card reset-card">
+        <section class="card focus-timer-card">
           <div class="card-header">
-            <div><span class="eyebrow">For looping thoughts</span><h2>Overthinking Reset</h2></div>
-            <span class="hint">Name it. Shrink it. Start.</span>
+            <div>
+              <span class="eyebrow">One small step</span>
+              <h2>10-Minute Focus Timer</h2>
+            </div>
+            <span class="hint">Start before you overthink</span>
           </div>
-          <p class="reset-intro">Move the worry out of your head and give tomorrow one small, controllable step.</p>
-          <label class="field-label" for="worryInput">What are you overthinking?</label>
-          <textarea id="worryInput" rows="3" aria-label="What you are overthinking" placeholder="I keep thinking about..."></textarea>
-          <label class="field-label" for="controlInput">What is in your control tomorrow?</label>
-          <input class="reset-input" id="controlInput" type="text" aria-label="What is in your control tomorrow" maxlength="160" placeholder="One thing you can influence">
-          <label class="field-label" for="nextStepInput">What is the smallest next step?</label>
-          <input class="reset-input" id="nextStepInput" type="text" aria-label="Smallest next step" maxlength="120" placeholder="Make it doable in 5 minutes">
-          <div class="reset-actions">
-            <button class="btn" id="parkThoughtBtn" type="button">Park thought & add next step</button>
-            <button class="btn-sm btn-secondary" id="clearResetBtn" type="button">Clear reset</button>
+          <div class="focus-timer" aria-label="10-minute focus timer">
+            <strong id="timerDisplay">10:00</strong>
+            <p id="timerStatus" aria-live="polite">Ready when you are.</p>
+            <div class="timer-actions">
+              <button class="btn btn-sm" id="timerStartBtn" type="button">Start</button>
+              <button class="btn btn-sm btn-secondary" id="timerResetBtn" type="button">Reset</button>
+            </div>
           </div>
-          <p class="reset-confirmation" id="resetConfirmation" aria-live="polite"></p>
         </section>
 
       </aside>
     </div>
-    <p class="save-status" id="saveStatus" aria-live="polite">Made Love with Zafar</p>
+    <p class="save-status" id="saveStatus" aria-live="polite">Made Love From Zafar</p>
     <p class="form-status" id="formStatus" aria-live="polite"></p>
   </main>
   <script src="app.js"></script>

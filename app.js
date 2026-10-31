@@ -1,5 +1,6 @@
 const STORAGE_KEY = 'plan_for_tomorrow_data';
 const FORMSPREE_ENDPOINT = 'https://formspree.io/f/mwllrvlo';
+const FOCUS_TIMER_SECONDS = 10 * 60;
 const defaultHours = [
   '06:00 AM', '07:00 AM', '08:00 AM', '09:00 AM', '10:00 AM',
   '11:00 AM', '12:00 PM', '01:00 PM', '02:00 PM', '03:00 PM',
@@ -9,25 +10,25 @@ const defaultHours = [
 
 let appState = {
   oneThing: '',
+  oneThingDone: false,
   secondary: ['', '', ''],
+  secondaryDone: [false, false, false],
   timeBlocks: {},
-  habits: {
-    h_clothes: false,
-    h_desk: false,
-    h_bag: false,
-    h_water: false,
-    h_phone: false
-  },
-  quickWins: [],
   brainDump: '',
-  reset: {
-    worry: '',
-    control: '',
-    nextStep: ''
-  },
-  completedWins: [],
-  theme: 'dark'
+  theme: 'dark',
+  checklistDate: '',
+  checklistHistory: {}
 };
+
+let timerSecondsRemaining = FOCUS_TIMER_SECONDS;
+let timerInterval = null;
+let viewingYesterday = false;
+
+function getPlanDate() {
+  const date = new Date();
+  date.setDate(date.getDate() + 1);
+  return date.toISOString().slice(0, 10);
+}
 
 function initTomorrowDate() {
   const tomorrow = new Date();
@@ -64,52 +65,13 @@ function buildTimeGrid() {
   });
 }
 
-function renderQuickWins() {
-  const list = document.getElementById('quickWinsList');
-  const empty = document.getElementById('quickWinsEmpty');
-  list.innerHTML = '';
-  empty.hidden = appState.quickWins.length > 0;
-  appState.quickWins.forEach((win, index) => {
-    const li = document.createElement('li');
-    const label = document.createElement('label');
-    label.className = 'win-label';
-    const checkbox = document.createElement('input');
-    checkbox.type = 'checkbox';
-    checkbox.checked = appState.completedWins.includes(index);
-    checkbox.addEventListener('change', () => {
-      if (checkbox.checked) appState.completedWins.push(index);
-      else appState.completedWins = appState.completedWins.filter(i => i !== index);
-      saveState();
-      renderQuickWins();
-      updateProgress();
-    });
-    const text = document.createElement('span');
-    text.textContent = win;
-    if (checkbox.checked) text.className = 'completed';
-    label.append(checkbox, text);
-    const remove = document.createElement('button');
-    remove.type = 'button';
-    remove.title = 'Remove';
-    remove.setAttribute('aria-label', `Remove quick win: ${win}`);
-    remove.textContent = '×';
-    li.append(label, remove);
-    remove.addEventListener('click', () => {
-      appState.quickWins.splice(index, 1);
-      appState.completedWins = appState.completedWins.filter(i => i !== index).map(i => i > index ? i - 1 : i);
-      saveState();
-      renderQuickWins();
-      updateProgress();
-    });
-    list.appendChild(li);
-  });
-}
-
 function saveState() {
+  appState.checklistDate = appState.checklistDate || getPlanDate();
   localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
   document.getElementById('saveStatus').textContent = 'Saved locally just now';
   clearTimeout(saveState.statusTimer);
   saveState.statusTimer = setTimeout(() => {
-    document.getElementById('saveStatus').textContent = 'Made Love with Zafar';
+    document.getElementById('saveStatus').textContent = 'Made Love From Zafar';
   }, 1800);
   updateProgress();
 }
@@ -119,8 +81,6 @@ function updateProgress() {
     appState.oneThing,
     ...(appState.secondary || []),
     ...Object.values(appState.timeBlocks || {}),
-    ...Object.values(appState.habits || {}).map(Boolean),
-    ...(appState.quickWins || [])
   ];
   const filled = inputs.filter(value => typeof value === 'boolean' ? value : String(value).trim()).length;
   const total = inputs.length || 1;
@@ -133,6 +93,55 @@ function updateProgress() {
 function applyTheme() {
   document.body.dataset.theme = appState.theme;
   document.getElementById('themeBtn').textContent = appState.theme === 'dark' ? 'Light mode' : 'Dark mode';
+}
+
+function updateTimerDisplay() {
+  const minutes = Math.floor(timerSecondsRemaining / 60).toString().padStart(2, '0');
+  const seconds = (timerSecondsRemaining % 60).toString().padStart(2, '0');
+  document.getElementById('timerDisplay').textContent = `${minutes}:${seconds}`;
+}
+
+function setTimerRunning(isRunning) {
+  const button = document.getElementById('timerStartBtn');
+  button.textContent = isRunning ? 'Pause' : 'Start';
+  button.setAttribute('aria-label', isRunning ? 'Pause 10-minute focus timer' : 'Start 10-minute focus timer');
+}
+
+function startTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+    setTimerRunning(false);
+    document.getElementById('timerStatus').textContent = 'Paused. Continue when you are ready.';
+    return;
+  }
+
+  if (timerSecondsRemaining === 0) {
+    timerSecondsRemaining = FOCUS_TIMER_SECONDS;
+    updateTimerDisplay();
+  }
+
+  setTimerRunning(true);
+  document.getElementById('timerStatus').textContent = 'Focus on one small next step.';
+  timerInterval = setInterval(() => {
+    timerSecondsRemaining -= 1;
+    updateTimerDisplay();
+    if (timerSecondsRemaining <= 0) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      setTimerRunning(false);
+      document.getElementById('timerStatus').textContent = 'Time is up. Notice what you moved forward.';
+    }
+  }, 1000);
+}
+
+function resetTimer() {
+  clearInterval(timerInterval);
+  timerInterval = null;
+  timerSecondsRemaining = FOCUS_TIMER_SECONDS;
+  updateTimerDisplay();
+  setTimerRunning(false);
+  document.getElementById('timerStatus').textContent = 'Ready when you are.';
 }
 
 function downloadFile(filename, content, type) {
@@ -155,59 +164,104 @@ function loadState() {
     }
   }
   appState.secondary = Array.isArray(appState.secondary) ? appState.secondary : ['', '', ''];
-  appState.quickWins = Array.isArray(appState.quickWins) ? appState.quickWins : [];
-  appState.completedWins = Array.isArray(appState.completedWins) ? appState.completedWins : [];
-  appState.reset = appState.reset && typeof appState.reset === 'object' ? appState.reset : { worry: '', control: '', nextStep: '' };
+  appState.secondaryDone = Array.isArray(appState.secondaryDone) ? appState.secondaryDone : [false, false, false];
+  appState.secondaryDone = [0, 1, 2].map(i => Boolean(appState.secondaryDone[i]));
+  appState.checklistHistory = appState.checklistHistory && typeof appState.checklistHistory === 'object' ? appState.checklistHistory : {};
+  const planDate = getPlanDate();
+  if (appState.checklistDate && appState.checklistDate !== planDate) {
+    appState.checklistHistory[appState.checklistDate] = {
+      oneThing: appState.oneThing,
+      oneThingDone: Boolean(appState.oneThingDone),
+      secondary: [...appState.secondary],
+      secondaryDone: [...appState.secondaryDone]
+    };
+    appState.oneThingDone = false;
+    appState.secondaryDone = [false, false, false];
+  }
+  appState.checklistDate = planDate;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
   appState.theme = appState.theme === 'light' ? 'light' : 'dark';
 
   document.getElementById('oneThingInput').value = appState.oneThing || '';
+  document.getElementById('oneThingDone').checked = Boolean(appState.oneThingDone);
   const secInputs = document.querySelectorAll('.sec-task');
   secInputs.forEach((input, i) => {
     input.value = (appState.secondary && appState.secondary[i]) || '';
   });
-
-  Object.keys(appState.habits || {}).forEach(k => {
-    const el = document.getElementById(k);
-    if (el) el.checked = !!appState.habits[k];
+  document.querySelectorAll('.task-check').forEach((input, i) => {
+    input.checked = Boolean(appState.secondaryDone[i]);
   });
 
   document.getElementById('brainDumpArea').value = appState.brainDump || '';
-  document.getElementById('worryInput').value = appState.reset.worry || '';
-  document.getElementById('controlInput').value = appState.reset.control || '';
-  document.getElementById('nextStepInput').value = appState.reset.nextStep || '';
   buildTimeGrid();
-  renderQuickWins();
   applyTheme();
   updateProgress();
 }
 
+function setPlannerReadOnly(readOnly) {
+  document.querySelectorAll('input, textarea').forEach(input => {
+    input.disabled = readOnly;
+  });
+  document.getElementById('applySuggestedFlowBtn').disabled = readOnly;
+  document.getElementById('yesterdayBtn').textContent = readOnly ? 'Today' : 'Yesterday';
+  document.getElementById('yesterdayBtn').setAttribute('aria-label', readOnly ? 'Return to today' : 'View yesterday checklist');
+  document.getElementById('saveStatus').textContent = readOnly ? 'Viewing yesterday (read-only)' : 'Made Love From Zafar';
+}
+
+function showYesterday() {
+  const yesterday = appState.checklistHistory[Object.keys(appState.checklistHistory).sort().pop()];
+  if (!yesterday) {
+    document.getElementById('saveStatus').textContent = 'No saved yesterday checklist yet';
+    return;
+  }
+  viewingYesterday = true;
+  document.getElementById('oneThingInput').value = yesterday.oneThing || '';
+  document.getElementById('oneThingDone').checked = Boolean(yesterday.oneThingDone);
+  document.querySelectorAll('.sec-task').forEach((input, i) => { input.value = yesterday.secondary?.[i] || ''; });
+  document.querySelectorAll('.task-check').forEach((input, i) => { input.checked = Boolean(yesterday.secondaryDone?.[i]); });
+  setPlannerReadOnly(true);
+}
+
+function showToday() {
+  viewingYesterday = false;
+  loadState();
+  setPlannerReadOnly(false);
+}
+
 function setupListeners() {
   document.getElementById('oneThingInput').addEventListener('input', (e) => {
+    if (viewingYesterday) return;
     appState.oneThing = e.target.value;
+    saveState();
+  });
+  document.getElementById('oneThingDone').addEventListener('change', (e) => {
+    if (viewingYesterday) return;
+    appState.oneThingDone = e.target.checked;
     saveState();
   });
 
   document.querySelectorAll('.sec-task').forEach((input, i) => {
     input.addEventListener('input', (e) => {
+      if (viewingYesterday) return;
       appState.secondary[i] = e.target.value;
       saveState();
     });
   });
-
-  ['h_clothes', 'h_desk', 'h_bag', 'h_water', 'h_phone'].forEach(k => {
-    const el = document.getElementById(k);
-    if (el) {
-      el.addEventListener('change', (e) => {
-        appState.habits[k] = e.target.checked;
-        saveState();
-      });
-    }
+  document.querySelectorAll('.task-check').forEach((input, i) => {
+    input.addEventListener('change', (e) => {
+      if (viewingYesterday) return;
+      appState.secondaryDone[i] = e.target.checked;
+      saveState();
+    });
   });
 
   document.getElementById('brainDumpArea').addEventListener('input', (e) => {
     appState.brainDump = e.target.value;
     saveState();
   });
+
+  document.getElementById('timerStartBtn').addEventListener('click', startTimer);
+  document.getElementById('timerResetBtn').addEventListener('click', resetTimer);
 
   document.getElementById('backupBtn').addEventListener('click', () => {
     const date = new Date().toISOString().slice(0, 10);
@@ -226,7 +280,7 @@ function setupListeners() {
     reader.onload = () => {
       try {
         const restored = JSON.parse(reader.result);
-        if (!restored || typeof restored !== 'object' || !Array.isArray(restored.quickWins)) {
+        if (!restored || typeof restored !== 'object') {
           throw new Error('Invalid planner backup');
         }
         localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...appState, ...restored }));
@@ -253,11 +307,10 @@ function setupListeners() {
           subject: `Twilight Routine plan - ${new Date().toLocaleDateString()}`,
           oneThing: appState.oneThing,
           secondaryTasks: appState.secondary,
+          completedOneThing: appState.oneThingDone,
+          completedSecondaryTasks: appState.secondaryDone,
           timeBlocks: appState.timeBlocks,
-          habits: appState.habits,
-          quickWins: appState.quickWins,
           brainDump: appState.brainDump,
-          overthinkingReset: appState.reset
         })
       });
       if (!response.ok) throw new Error(`Formspree returned ${response.status}`);
@@ -268,70 +321,6 @@ function setupListeners() {
     } finally {
       button.disabled = false;
     }
-  });
-
-  ['worryInput', 'controlInput', 'nextStepInput'].forEach((id) => {
-    document.getElementById(id).addEventListener('input', (e) => {
-      appState.reset[{ worryInput: 'worry', controlInput: 'control', nextStepInput: 'nextStep' }[id]] = e.target.value;
-      saveState();
-    });
-
-  });
-
-  const addQuickWin = () => {
-    const input = document.getElementById('quickWinInput');
-    const val = input.value.trim();
-    if (val) {
-      appState.quickWins.push(val);
-      saveState();
-      renderQuickWins();
-      input.value = '';
-    }
-  };
-
-  document.getElementById('addQuickWinBtn').addEventListener('click', addQuickWin);
-  document.getElementById('quickWinInput').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') addQuickWin();
-  });
-
-  document.getElementById('turnDumpToTasksBtn').addEventListener('click', () => {
-    const lines = appState.brainDump.split('\n').map(l => l.replace(/^[-*•]\s*/, '').trim()).filter(Boolean);
-    if (lines.length) {
-      appState.quickWins.push(...lines);
-      appState.brainDump = '';
-      document.getElementById('brainDumpArea').value = '';
-      saveState();
-      renderQuickWins();
-      updateProgress();
-    }
-  });
-
-  document.getElementById('parkThoughtBtn').addEventListener('click', () => {
-    const nextStep = appState.reset.nextStep.trim();
-    const confirmation = document.getElementById('resetConfirmation');
-    if (!nextStep) {
-      confirmation.textContent = 'Add one tiny next step first.';
-      return;
-    }
-    if (!appState.quickWins.includes(nextStep)) appState.quickWins.push(nextStep);
-    appState.reset.worry = '';
-    appState.reset.control = '';
-    appState.reset.nextStep = '';
-    document.getElementById('worryInput').value = '';
-    document.getElementById('controlInput').value = '';
-    document.getElementById('nextStepInput').value = '';
-    saveState();
-    renderQuickWins();
-    confirmation.textContent = 'Thought parked. Your next step is in Quick Wins.';
-  });
-
-  document.getElementById('clearResetBtn').addEventListener('click', () => {
-    appState.reset = { worry: '', control: '', nextStep: '' };
-    document.getElementById('worryInput').value = '';
-    document.getElementById('controlInput').value = '';
-    document.getElementById('nextStepInput').value = '';
-    document.getElementById('resetConfirmation').textContent = 'Reset cleared.';
-    saveState();
   });
 
   document.getElementById('applySuggestedFlowBtn').addEventListener('click', () => {
@@ -367,8 +356,6 @@ function setupListeners() {
     Object.keys(appState.timeBlocks || {}).forEach(k => {
       if (appState.timeBlocks[k]) md += `- **${k}**: ${appState.timeBlocks[k]}\n`;
     });
-    md += `\n## Quick Wins\n`;
-    (appState.quickWins || []).forEach(w => md += `- [ ] ${w}\n`);
     const showCopyStatus = (message) => {
       const btn = document.getElementById('copyMdBtn');
       const original = btn.textContent;
@@ -394,10 +381,16 @@ function setupListeners() {
       location.reload();
     }
   });
+
+  document.getElementById('yesterdayBtn').addEventListener('click', () => {
+    if (viewingYesterday) showToday();
+    else showYesterday();
+  });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
   initTomorrowDate();
   loadState();
+  updateTimerDisplay();
   setupListeners();
 });
