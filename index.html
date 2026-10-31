@@ -20,11 +20,11 @@
         <p id="tomorrowDateDisplay">Loading tomorrow's date...</p>
       </div>
       <div class="header-actions">
-        <button class="btn btn-secondary" id="themeBtn" type="button" aria-label="Toggle color theme">☼ Theme</button>
+        <button class="btn btn-secondary" id="themeBtn" type="button" aria-label="Toggle color theme">Theme</button>
         <button class="btn btn-secondary" id="backupBtn" type="button">Save backup</button>
         <button class="btn btn-secondary" id="restoreBtn" type="button">Restore</button>
         <input id="restoreInput" type="file" accept="application/json,.json" hidden>
-        <button class="btn btn-secondary" id="calendarBtn" type="button">Calendar</button>
+        <button class="btn btn-secondary" id="formSubmitBtn" type="button">Save online</button>
         <button class="btn btn-secondary" id="copyMdBtn" type="button">Copy plan</button>
         <button class="btn" id="printBtn" type="button">Print / PDF</button>
         <button class="btn btn-ghost" id="clearBtn" type="button">Reset</button>
@@ -107,16 +107,6 @@
           </div>
           <ul class="quick-win-list" id="quickWinsList"></ul>
           <p class="empty-state" id="quickWinsEmpty">Small wins make starting easier.</p>
-          <div class="focus-tool">
-            <div>
-              <span class="eyebrow">Start small</span>
-              <strong id="timerDisplay">05:00</strong>
-            </div>
-            <div class="focus-actions">
-              <button class="btn-sm" id="timerBtn" type="button">Start focus</button>
-              <button class="btn-sm btn-secondary" id="timerResetBtn" type="button">Reset timer</button>
-            </div>
-          </div>
         </section>
 
         <section class="card">
@@ -146,33 +136,10 @@
           <p class="reset-confirmation" id="resetConfirmation" aria-live="polite"></p>
         </section>
 
-        <section class="card quote-card">
-          <div class="card-header">
-            <div><span class="eyebrow">A gentler perspective</span><h2>Daily Quote</h2></div>
-            <button class="btn-sm btn-secondary" id="newQuoteBtn" type="button">New quote</button>
-          </div>
-          <blockquote id="quoteText"></blockquote>
-          <p class="quote-author" id="quoteAuthor"></p>
-          <div class="quote-actions">
-            <button class="btn-sm" id="saveQuoteBtn" type="button">Save favorite</button>
-            <span class="quote-status" id="quoteStatus" aria-live="polite"></span>
-          </div>
-        </section>
-
-        <section class="card gratitude-card">
-          <div class="card-header">
-            <div><span class="eyebrow">Close the day gently</span><h2>3 Things I'm Grateful For</h2></div>
-            <span class="hint">A quiet moment for tonight</span>
-          </div>
-          <div class="gratitude-list">
-            <input class="gratitude-input" id="gratitude1" type="text" maxlength="140" placeholder="Something, someone, or a moment">
-            <input class="gratitude-input" id="gratitude2" type="text" maxlength="140" placeholder="Something that went well">
-            <input class="gratitude-input" id="gratitude3" type="text" maxlength="140" placeholder="Something you want to appreciate">
-          </div>
-        </section>
       </aside>
     </div>
     <p class="save-status" id="saveStatus" aria-live="polite">Saved locally in your browser</p>
+    <p class="form-status" id="formStatus" aria-live="polite"></p>
   </main>
   <script src="app.js"></script>
 </body>

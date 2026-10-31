@@ -47,14 +47,14 @@ body {
 }
 
 body[data-theme="light"] {
-  --bg: #f4f7fb;
-  --surface: #ffffff;
-  --surface-alt: #f0f3f9;
-  --border: #d9e0ed;
-  --text: #182033;
-  --text-muted: #68748a;
-  --shadow: 0 18px 45px rgba(31, 45, 70, .08);
-  background: radial-gradient(circle at 8% 0%, rgba(139, 124, 246, .12), transparent 30rem), var(--bg);
+  --bg: #e9edf3;
+  --surface: #f7f8fa;
+  --surface-alt: #e7ebf1;
+  --border: #cbd3df;
+  --text: #1d2738;
+  --text-muted: #58667a;
+  --shadow: 0 16px 38px rgba(31, 45, 70, .08);
+  background: radial-gradient(circle at 8% 0%, rgba(139, 124, 246, .09), transparent 30rem), var(--bg);
 }
 
 .app-shell {
@@ -365,25 +365,7 @@ input::placeholder, textarea::placeholder { color: #7886a0; }
 .win-label .completed { color: var(--text-muted); text-decoration: line-through; }
 .empty-state { color: var(--text-muted); font-size: 12px; padding: 3px 2px; }
 .save-status { color: var(--text-muted); font-size: 11px; text-align: center; }
-
-.focus-tool {
-  align-items: center;
-  border-top: 1px solid var(--border);
-  display: flex;
-  justify-content: space-between;
-  margin-top: 14px;
-  padding-top: 14px;
-}
-
-.focus-tool strong {
-  display: block;
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 24px;
-  letter-spacing: .04em;
-}
-
-.focus-actions { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
-
+.form-status { color: var(--accent); font-size: 11px; min-height: 16px; text-align: center; }
 .reset-card {
   background: linear-gradient(145deg, rgba(109, 214, 192, .08), rgba(139, 124, 246, .08));
 }
@@ -419,60 +401,6 @@ input::placeholder, textarea::placeholder { color: #7886a0; }
 .reset-input:focus, #worryInput:focus { border-color: var(--accent); }
 .reset-actions { align-items: center; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; }
 .reset-confirmation { color: var(--accent); font-size: 12px; min-height: 18px; padding-top: 8px; }
-
-.quote-card {
-  background: linear-gradient(145deg, rgba(139, 124, 246, .12), rgba(109, 214, 192, .08));
-}
-
-.quote-card blockquote {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 20px;
-  line-height: 1.4;
-  margin: 8px 0 8px;
-}
-
-.quote-author {
-  color: var(--text-muted);
-  font-size: 12px;
-}
-
-.quote-actions {
-  align-items: center;
-  display: flex;
-  gap: 10px;
-  margin-top: 16px;
-}
-
-.quote-status {
-  color: var(--accent);
-  font-size: 12px;
-}
-
-.gratitude-card {
-  background: linear-gradient(145deg, rgba(255, 196, 128, .09), rgba(109, 214, 192, .07));
-}
-
-.gratitude-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.gratitude-input {
-  background: var(--surface-alt);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  color: var(--text);
-  font-size: 14px;
-  min-height: 44px;
-  outline: none;
-  padding: 10px 12px;
-  width: 100%;
-}
-
-.gratitude-input:focus {
-  border-color: var(--accent);
-}
 
 .quick-win-list li button {
   background: none;
@@ -524,10 +452,7 @@ textarea#brainDumpArea:focus {
   }
 
   .reset-input, #worryInput { font-size: 16px; }
-  .gratitude-input { font-size: 16px; }
   .reset-actions .btn { flex: 1; min-width: 190px; }
-  .quote-card blockquote { font-size: 18px; }
-  .quote-actions { align-items: stretch; flex-direction: column; }
 }
 
 @media (max-width: 680px) {
@@ -638,10 +563,6 @@ textarea#brainDumpArea:focus {
   .quick-win-list li { min-height: 46px; padding: 7px 10px; }
   .quick-win-list li button { min-height: 38px; min-width: 38px; }
 
-  .focus-tool { align-items: flex-start; gap: 12px; }
-  .focus-actions { flex-direction: column; }
-  .focus-actions .btn-sm { min-height: 40px; }
-
   textarea#brainDumpArea {
     min-height: 150px;
     padding: 12px;
@@ -649,4 +570,38 @@ textarea#brainDumpArea:focus {
 
   .app-shell { padding-bottom: 12px; }
   .save-status { padding-bottom: 8px; }
+}
+
+@media (max-width: 680px) {
+  body:not([data-theme="light"]) {
+    --bg: #111827;
+    --surface: #1b263b;
+    --surface-alt: #24324b;
+    --border: #3a4b69;
+    --text: #f8fafc;
+    --text-muted: #c0cadb;
+  }
+
+  body:not([data-theme="light"]) .card,
+  body:not([data-theme="light"]) .progress-strip {
+    box-shadow: 0 12px 30px rgba(0, 0, 0, .28);
+  }
+
+  body:not([data-theme="light"]) input,
+  body:not([data-theme="light"]) textarea {
+    border-color: #405274;
+  }
+
+  body:not([data-theme="light"]) input::placeholder,
+  body:not([data-theme="light"]) textarea::placeholder {
+    color: #aebbd0;
+    opacity: 1;
+  }
+
+  body:not([data-theme="light"]) .hint,
+  body:not([data-theme="light"]) .progress-detail,
+  body:not([data-theme="light"]) .empty-state,
+  body:not([data-theme="light"]) .save-status {
+    color: #c0cadb;
+  }
 }

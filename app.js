@@ -1,37 +1,10 @@
 const STORAGE_KEY = 'plan_for_tomorrow_data';
-
+const FORMSPREE_ENDPOINT = 'https://formspree.io/f/mwllrvlo';
 const defaultHours = [
   '06:00 AM', '07:00 AM', '08:00 AM', '09:00 AM', '10:00 AM',
   '11:00 AM', '12:00 PM', '01:00 PM', '02:00 PM', '03:00 PM',
   '04:00 PM', '05:00 PM', '06:00 PM', '07:00 PM', '08:00 PM',
   '09:00 PM', '10:00 PM'
-];
-
-const helpfulQuotes = [
-  {
-    text: 'You do not have to see the whole path. You only need to take the next kind step.',
-    author: 'A reminder for starting'
-  },
-  {
-    text: 'Clarity often comes after action, not before it.',
-    author: 'A reminder for overthinking'
-  },
-  {
-    text: 'Make the next step so small that your brain has nothing left to argue with.',
-    author: 'A reminder for momentum'
-  },
-  {
-    text: 'A good plan is a place to begin, not a promise to control everything.',
-    author: 'A reminder for flexibility'
-  },
-  {
-    text: 'Done gently is better than perfect in your head.',
-    author: 'A reminder for self-compassion'
-  },
-  {
-    text: 'You can care deeply without carrying every possible outcome tonight.',
-    author: 'A reminder for rest'
-  }
 ];
 
 let appState = {
@@ -52,15 +25,9 @@ let appState = {
     control: '',
     nextStep: ''
   },
-  quoteIndex: 0,
-  favoriteQuote: '',
-  gratitude: ['', '', ''],
   completedWins: [],
   theme: 'dark'
 };
-
-let timerSeconds = 300;
-let timerId = null;
 
 function initTomorrowDate() {
   const tomorrow = new Date();
@@ -151,8 +118,7 @@ function updateProgress() {
     ...(appState.secondary || []),
     ...Object.values(appState.timeBlocks || {}),
     ...Object.values(appState.habits || {}).map(Boolean),
-    ...(appState.quickWins || []),
-    ...(appState.gratitude || [])
+    ...(appState.quickWins || [])
   ];
   const filled = inputs.filter(value => typeof value === 'boolean' ? value : String(value).trim()).length;
   const total = inputs.length || 1;
@@ -164,7 +130,7 @@ function updateProgress() {
 
 function applyTheme() {
   document.body.dataset.theme = appState.theme;
-  document.getElementById('themeBtn').textContent = appState.theme === 'dark' ? '☼ Light mode' : '☾ Dark mode';
+  document.getElementById('themeBtn').textContent = appState.theme === 'dark' ? 'Light mode' : 'Dark mode';
 }
 
 function downloadFile(filename, content, type) {
@@ -175,40 +141,6 @@ function downloadFile(filename, content, type) {
   link.download = filename;
   link.click();
   URL.revokeObjectURL(url);
-}
-
-function formatTimer() {
-  const minutes = Math.floor(timerSeconds / 60).toString().padStart(2, '0');
-  const seconds = (timerSeconds % 60).toString().padStart(2, '0');
-  document.getElementById('timerDisplay').textContent = `${minutes}:${seconds}`;
-}
-
-function getTomorrowDateParts() {
-  const date = new Date();
-  date.setDate(date.getDate() + 1);
-  return {
-    date,
-    compact: date.toISOString().slice(0, 10).replace(/-/g, '')
-  };
-}
-
-function getLocalDateKey() {
-  const date = new Date();
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
-
-function getDailyQuoteIndex(dateKey) {
-  return [...dateKey].reduce((total, character) => total + character.charCodeAt(0), 0) % helpfulQuotes.length;
-}
-
-function renderQuote() {
-  const quote = helpfulQuotes[appState.quoteIndex % helpfulQuotes.length];
-  document.getElementById('quoteText').textContent = `“${quote.text}”`;
-  document.getElementById('quoteAuthor').textContent = `— ${quote.author}`;
-  document.getElementById('saveQuoteBtn').textContent = appState.favoriteQuote === quote.text ? 'Saved favorite' : 'Save favorite';
 }
 
 function loadState() {
@@ -224,16 +156,6 @@ function loadState() {
   appState.quickWins = Array.isArray(appState.quickWins) ? appState.quickWins : [];
   appState.completedWins = Array.isArray(appState.completedWins) ? appState.completedWins : [];
   appState.reset = appState.reset && typeof appState.reset === 'object' ? appState.reset : { worry: '', control: '', nextStep: '' };
-  appState.quoteIndex = Number.isInteger(appState.quoteIndex) ? appState.quoteIndex : 0;
-  appState.favoriteQuote = typeof appState.favoriteQuote === 'string' ? appState.favoriteQuote : '';
-  appState.gratitude = Array.isArray(appState.gratitude) ? appState.gratitude : ['', '', ''];
-  const today = getLocalDateKey();
-  if (appState.quoteDate !== today) {
-    appState.quoteIndex = getDailyQuoteIndex(today);
-    appState.quoteDate = today;
-    appState.favoriteQuote = '';
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
-  }
   appState.theme = appState.theme === 'light' ? 'light' : 'dark';
 
   document.getElementById('oneThingInput').value = appState.oneThing || '';
@@ -251,13 +173,9 @@ function loadState() {
   document.getElementById('worryInput').value = appState.reset.worry || '';
   document.getElementById('controlInput').value = appState.reset.control || '';
   document.getElementById('nextStepInput').value = appState.reset.nextStep || '';
-  appState.gratitude.forEach((value, index) => {
-    document.getElementById(`gratitude${index + 1}`).value = value || '';
-  });
   buildTimeGrid();
   renderQuickWins();
   applyTheme();
-  renderQuote();
   updateProgress();
 }
 
@@ -320,51 +238,34 @@ function setupListeners() {
     event.target.value = '';
   });
 
-  document.getElementById('calendarBtn').addEventListener('click', () => {
-    const { date, compact } = getTomorrowDateParts();
-    const events = Object.entries(appState.timeBlocks || {}).filter(([, title]) => title && title.trim());
-    const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Twilight Routine//EN'];
-    events.forEach(([hour, title], index) => {
-      const time = hour.match(/(\d{2}):(\d{2}) (AM|PM)/);
-      if (!time) return;
-      let hours = Number(time[1]) % 12;
-      if (time[3] === 'PM') hours += 12;
-      const start = `${compact}T${String(hours).padStart(2, '0')}${time[2]}00`;
-      const endHour = hours + 1;
-      const end = `${compact}T${String(endHour).padStart(2, '0')}${time[2]}00`;
-      lines.push('BEGIN:VEVENT', `UID:twilight-${compact}-${index}@local`, `DTSTART:${start}`, `DTEND:${end}`, `SUMMARY:${title.replace(/[\\,;]/g, '\\$&').replace(/\n/g, '\\n')}`, 'END:VEVENT');
-    });
-    lines.push('END:VCALENDAR');
-    downloadFile(`twilight-routine-${date.toISOString().slice(0, 10)}.ics`, lines.join('\r\n'), 'text/calendar');
-    document.getElementById('saveStatus').textContent = events.length ? 'Calendar file downloaded' : 'Add time blocks before exporting';
-  });
-
-  document.getElementById('timerBtn').addEventListener('click', () => {
-    if (timerId) {
-      clearInterval(timerId);
-      timerId = null;
-      document.getElementById('timerBtn').textContent = 'Resume focus';
-      return;
+  document.getElementById('formSubmitBtn').addEventListener('click', async () => {
+    const status = document.getElementById('formStatus');
+    const button = document.getElementById('formSubmitBtn');
+    button.disabled = true;
+    status.textContent = 'Saving online...';
+    try {
+      const response = await fetch(FORMSPREE_ENDPOINT, {
+        method: 'POST',
+        headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          subject: `Twilight Routine plan - ${new Date().toLocaleDateString()}`,
+          oneThing: appState.oneThing,
+          secondaryTasks: appState.secondary,
+          timeBlocks: appState.timeBlocks,
+          habits: appState.habits,
+          quickWins: appState.quickWins,
+          brainDump: appState.brainDump,
+          overthinkingReset: appState.reset
+        })
+      });
+      if (!response.ok) throw new Error(`Formspree returned ${response.status}`);
+      status.textContent = 'Saved online.';
+    } catch (error) {
+      status.textContent = 'Online save failed. Your local copy is still safe.';
+      console.error('Failed to submit planner to Formspree:', error);
+    } finally {
+      button.disabled = false;
     }
-    document.getElementById('timerBtn').textContent = 'Pause';
-    timerId = setInterval(() => {
-      timerSeconds -= 1;
-      formatTimer();
-      if (timerSeconds <= 0) {
-        clearInterval(timerId);
-        timerId = null;
-        document.getElementById('timerBtn').textContent = 'Start focus';
-        document.getElementById('saveStatus').textContent = 'Focus session complete';
-      }
-    }, 1000);
-  });
-
-  document.getElementById('timerResetBtn').addEventListener('click', () => {
-    clearInterval(timerId);
-    timerId = null;
-    timerSeconds = 300;
-    formatTimer();
-    document.getElementById('timerBtn').textContent = 'Start focus';
   });
 
   ['worryInput', 'controlInput', 'nextStepInput'].forEach((id) => {
@@ -373,12 +274,6 @@ function setupListeners() {
       saveState();
     });
 
-    document.querySelectorAll('.gratitude-input').forEach((input, index) => {
-      input.addEventListener('input', (event) => {
-        appState.gratitude[index] = event.target.value;
-        saveState();
-      });
-    });
   });
 
   const addQuickWin = () => {
@@ -437,22 +332,6 @@ function setupListeners() {
     saveState();
   });
 
-  document.getElementById('newQuoteBtn').addEventListener('click', () => {
-    appState.quoteIndex = (appState.quoteIndex + 1) % helpfulQuotes.length;
-    appState.quoteDate = getLocalDateKey();
-    document.getElementById('quoteStatus').textContent = '';
-    renderQuote();
-    saveState();
-  });
-
-  document.getElementById('saveQuoteBtn').addEventListener('click', () => {
-    const quote = helpfulQuotes[appState.quoteIndex % helpfulQuotes.length];
-    appState.favoriteQuote = appState.favoriteQuote === quote.text ? '' : quote.text;
-    document.getElementById('quoteStatus').textContent = appState.favoriteQuote ? 'Saved for your next reset.' : 'Favorite removed.';
-    renderQuote();
-    saveState();
-  });
-
   document.getElementById('applySuggestedFlowBtn').addEventListener('click', () => {
     const suggested = {
       '07:00 AM': 'Morning warmup, hydrate & light breakfast',
@@ -488,8 +367,6 @@ function setupListeners() {
     });
     md += `\n## Quick Wins\n`;
     (appState.quickWins || []).forEach(w => md += `- [ ] ${w}\n`);
-    md += `\n## Gratitude\n`;
-    (appState.gratitude || []).forEach(g => { if (g) md += `- ${g}\n`; });
     const showCopyStatus = (message) => {
       const btn = document.getElementById('copyMdBtn');
       const original = btn.textContent;
