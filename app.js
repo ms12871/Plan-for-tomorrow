@@ -10,24 +10,20 @@ const defaultHours = [
 
 let appState = {
   oneThing: '',
-  oneThingDone: false,
   secondary: ['', '', ''],
-  secondaryDone: [false, false, false],
   timeBlocks: {},
   brainDump: '',
-  theme: 'dark',
-  checklistDate: '',
-  checklistHistory: {}
+  theme: 'dark'
 };
 
 let timerSecondsRemaining = FOCUS_TIMER_SECONDS;
 let timerInterval = null;
-let viewingYesterday = false;
 
-function getPlanDate() {
-  const date = new Date();
-  date.setDate(date.getDate() + 1);
-  return date.toISOString().slice(0, 10);
+function formatLocalDate(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
 function initTomorrowDate() {
@@ -66,7 +62,6 @@ function buildTimeGrid() {
 }
 
 function saveState() {
-  appState.checklistDate = appState.checklistDate || getPlanDate();
   localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
   document.getElementById('saveStatus').textContent = 'Saved locally just now';
   clearTimeout(saveState.statusTimer);
@@ -158,99 +153,43 @@ function loadState() {
   const saved = localStorage.getItem(STORAGE_KEY);
   if (saved) {
     try {
-      appState = { ...appState, ...JSON.parse(saved) };
+      const parsed = JSON.parse(saved);
+      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+        appState = { ...appState, ...parsed };
+      } else {
+        throw new Error('Saved planner state is not an object');
+      }
     } catch (e) {
       console.error('Failed to parse saved state:', e);
     }
   }
   appState.secondary = Array.isArray(appState.secondary) ? appState.secondary : ['', '', ''];
-  appState.secondaryDone = Array.isArray(appState.secondaryDone) ? appState.secondaryDone : [false, false, false];
-  appState.secondaryDone = [0, 1, 2].map(i => Boolean(appState.secondaryDone[i]));
-  appState.checklistHistory = appState.checklistHistory && typeof appState.checklistHistory === 'object' ? appState.checklistHistory : {};
-  const planDate = getPlanDate();
-  if (appState.checklistDate && appState.checklistDate !== planDate) {
-    appState.checklistHistory[appState.checklistDate] = {
-      oneThing: appState.oneThing,
-      oneThingDone: Boolean(appState.oneThingDone),
-      secondary: [...appState.secondary],
-      secondaryDone: [...appState.secondaryDone]
-    };
-    appState.oneThingDone = false;
-    appState.secondaryDone = [false, false, false];
-  }
-  appState.checklistDate = planDate;
+  appState.timeBlocks = appState.timeBlocks && typeof appState.timeBlocks === 'object' && !Array.isArray(appState.timeBlocks)
+    ? appState.timeBlocks
+    : {};
   localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
   appState.theme = appState.theme === 'light' ? 'light' : 'dark';
 
   document.getElementById('oneThingInput').value = appState.oneThing || '';
-  document.getElementById('oneThingDone').checked = Boolean(appState.oneThingDone);
   const secInputs = document.querySelectorAll('.sec-task');
   secInputs.forEach((input, i) => {
     input.value = (appState.secondary && appState.secondary[i]) || '';
   });
-  document.querySelectorAll('.task-check').forEach((input, i) => {
-    input.checked = Boolean(appState.secondaryDone[i]);
-  });
-
   document.getElementById('brainDumpArea').value = appState.brainDump || '';
   buildTimeGrid();
   applyTheme();
   updateProgress();
 }
 
-function setPlannerReadOnly(readOnly) {
-  document.querySelectorAll('input, textarea').forEach(input => {
-    input.disabled = readOnly;
-  });
-  document.getElementById('applySuggestedFlowBtn').disabled = readOnly;
-  document.getElementById('yesterdayBtn').textContent = readOnly ? 'Today' : 'Yesterday';
-  document.getElementById('yesterdayBtn').setAttribute('aria-label', readOnly ? 'Return to today' : 'View yesterday checklist');
-  document.getElementById('saveStatus').textContent = readOnly ? 'Viewing yesterday (read-only)' : 'Made Love From Zafar';
-}
-
-function showYesterday() {
-  const yesterday = appState.checklistHistory[Object.keys(appState.checklistHistory).sort().pop()];
-  if (!yesterday) {
-    document.getElementById('saveStatus').textContent = 'No saved yesterday checklist yet';
-    return;
-  }
-  viewingYesterday = true;
-  document.getElementById('oneThingInput').value = yesterday.oneThing || '';
-  document.getElementById('oneThingDone').checked = Boolean(yesterday.oneThingDone);
-  document.querySelectorAll('.sec-task').forEach((input, i) => { input.value = yesterday.secondary?.[i] || ''; });
-  document.querySelectorAll('.task-check').forEach((input, i) => { input.checked = Boolean(yesterday.secondaryDone?.[i]); });
-  setPlannerReadOnly(true);
-}
-
-function showToday() {
-  viewingYesterday = false;
-  loadState();
-  setPlannerReadOnly(false);
-}
-
 function setupListeners() {
   document.getElementById('oneThingInput').addEventListener('input', (e) => {
-    if (viewingYesterday) return;
     appState.oneThing = e.target.value;
-    saveState();
-  });
-  document.getElementById('oneThingDone').addEventListener('change', (e) => {
-    if (viewingYesterday) return;
-    appState.oneThingDone = e.target.checked;
     saveState();
   });
 
   document.querySelectorAll('.sec-task').forEach((input, i) => {
     input.addEventListener('input', (e) => {
-      if (viewingYesterday) return;
       appState.secondary[i] = e.target.value;
-      saveState();
-    });
-  });
-  document.querySelectorAll('.task-check').forEach((input, i) => {
-    input.addEventListener('change', (e) => {
-      if (viewingYesterday) return;
-      appState.secondaryDone[i] = e.target.checked;
       saveState();
     });
   });
@@ -264,8 +203,8 @@ function setupListeners() {
   document.getElementById('timerResetBtn').addEventListener('click', resetTimer);
 
   document.getElementById('backupBtn').addEventListener('click', () => {
-    const date = new Date().toISOString().slice(0, 10);
-    downloadFile(`twilight-routine-${date}.json`, JSON.stringify(appState, null, 2), 'application/json');
+    const date = formatLocalDate(new Date());
+    downloadFile(`daily-routine-${date}.json`, JSON.stringify(appState, null, 2), 'application/json');
     document.getElementById('saveStatus').textContent = 'Backup downloaded';
   });
 
@@ -297,29 +236,34 @@ function setupListeners() {
   document.getElementById('formSubmitBtn').addEventListener('click', async () => {
     const status = document.getElementById('formStatus');
     const button = document.getElementById('formSubmitBtn');
+    const originalLabel = 'Save online';
     button.disabled = true;
+    button.textContent = 'Saving...';
     status.textContent = 'Saving online...';
     try {
       const response = await fetch(FORMSPREE_ENDPOINT, {
         method: 'POST',
         headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          subject: `Twilight Routine plan - ${new Date().toLocaleDateString()}`,
+          subject: `Daily Routine plan - ${new Date().toLocaleDateString()}`,
           oneThing: appState.oneThing,
           secondaryTasks: appState.secondary,
-          completedOneThing: appState.oneThingDone,
-          completedSecondaryTasks: appState.secondaryDone,
           timeBlocks: appState.timeBlocks,
           brainDump: appState.brainDump,
         })
       });
       if (!response.ok) throw new Error(`Formspree returned ${response.status}`);
       status.textContent = 'Saved online.';
+      button.textContent = 'Saved';
     } catch (error) {
       status.textContent = 'Online save failed. Your local copy is still safe.';
+      button.textContent = 'Save failed';
       console.error('Failed to submit planner to Formspree:', error);
     } finally {
       button.disabled = false;
+      setTimeout(() => {
+        button.textContent = originalLabel;
+      }, 2500);
     }
   });
 
@@ -382,10 +326,6 @@ function setupListeners() {
     }
   });
 
-  document.getElementById('yesterdayBtn').addEventListener('click', () => {
-    if (viewingYesterday) showToday();
-    else showYesterday();
-  });
 }
 
 document.addEventListener('DOMContentLoaded', () => {

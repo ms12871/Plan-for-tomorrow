@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#111827">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>Twilight Routine | Plan for Tomorrow</title>
+  <title>Daily Routine | Plan for Tomorrow</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -16,10 +16,10 @@
   <main class="app-shell">
     <header class="app-header">
       <div class="header-left">
-        <a class="brand" href="#top" aria-label="Go to the top of Twilight Routine">
+        <a class="brand" href="#top" aria-label="Go to the top of Daily Routine">
           <img class="brand-mark pigeon-photo" src="peace-pigeon-logo-transparent.png" alt="White peace pigeon in flight">
           <div>
-            <h1>Twilight Routine</h1>
+            <h1>Daily Routine</h1>
             <p id="tomorrowDateDisplay">Loading tomorrow's date...</p>
           </div>
         </a>
@@ -31,7 +31,6 @@
         <input id="restoreInput" type="file" accept="application/json,.json" hidden>
         <button class="btn btn-secondary" id="formSubmitBtn" type="button">Save online</button>
         <button class="btn btn-secondary" id="copyMdBtn" type="button">Copy plan</button>
-        <button class="btn btn-secondary" id="yesterdayBtn" type="button">Yesterday</button>
         <button class="btn" id="printBtn" type="button">Print / PDF</button>
         <button class="btn btn-ghost" id="clearBtn" type="button">Reset</button>
       </div>
@@ -57,10 +56,7 @@
             <span class="hint">The highest-impact priority</span>
           </div>
           <div class="one-thing-box">
-            <label class="checkable-input">
-              <input id="oneThingDone" type="checkbox" aria-label="Mark the one thing complete">
-              <input id="oneThingInput" type="text" aria-label="The one thing for tomorrow" placeholder="What would make tomorrow a win?" maxlength="140">
-            </label>
+            <input id="oneThingInput" type="text" aria-label="The one thing for tomorrow" placeholder="What would make tomorrow a win?" maxlength="140">
           </div>
         </section>
 
@@ -73,9 +69,9 @@
             <span class="hint">Support the main goal</span>
           </div>
           <div class="task-list">
-            <label class="task-row"><input class="task-check" type="checkbox" aria-label="Mark secondary task 1 complete"><span class="num">01</span><input class="sec-task" type="text" aria-label="Secondary task 1" placeholder="A meaningful supporting task" maxlength="120"></label>
-            <label class="task-row"><input class="task-check" type="checkbox" aria-label="Mark secondary task 2 complete"><span class="num">02</span><input class="sec-task" type="text" aria-label="Secondary task 2" placeholder="A meaningful supporting task" maxlength="120"></label>
-            <label class="task-row"><input class="task-check" type="checkbox" aria-label="Mark secondary task 3 complete"><span class="num">03</span><input class="sec-task" type="text" aria-label="Secondary task 3" placeholder="A meaningful supporting task" maxlength="120"></label>
+            <label class="task-row"><span class="num">01</span><input class="sec-task" type="text" aria-label="Secondary task 1" placeholder="A meaningful supporting task" maxlength="120"></label>
+            <label class="task-row"><span class="num">02</span><input class="sec-task" type="text" aria-label="Secondary task 2" placeholder="A meaningful supporting task" maxlength="120"></label>
+            <label class="task-row"><span class="num">03</span><input class="sec-task" type="text" aria-label="Secondary task 3" placeholder="A meaningful supporting task" maxlength="120"></label>
           </div>
         </section>
 

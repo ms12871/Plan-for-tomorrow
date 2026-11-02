@@ -114,18 +114,6 @@ body[data-theme="light"] {
   font-weight: 500;
 }
 
-.badge {
-  display: inline-block;
-  background: rgba(99, 102, 241, 0.15);
-  color: var(--accent);
-  padding: 3px 10px;
-  border-radius: 9999px;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  margin-bottom: 6px;
-}
-
 .header-actions {
   display: flex;
   gap: 10px;
@@ -172,12 +160,13 @@ textarea:focus-visible {
 }
 
 .btn-ghost {
-  background: transparent;
+  background: var(--surface-alt);
   color: var(--text);
-  border: 1px solid transparent;
+  border: 1px solid var(--border);
 }
 
 .btn-ghost:hover {
+  background: var(--border);
   color: var(--danger);
 }
 
@@ -273,27 +262,6 @@ textarea:focus-visible {
   font-weight: 500;
 }
 
-.checkable-input {
-  align-items: center;
-  display: flex;
-  gap: 10px;
-}
-
-.checkable-input > input[type="checkbox"],
-.task-check {
-  accent-color: var(--accent);
-  background: none;
-  border: 0;
-  flex: 0 0 auto;
-  height: 19px;
-  padding: 0;
-  width: 19px;
-}
-
-.checkable-input > input[type="text"] {
-  min-width: 0;
-}
-
 input::placeholder, textarea::placeholder { color: #aab8cf; opacity: 1; }
 
 body[data-theme="light"] input,
@@ -339,11 +307,6 @@ body[data-theme="light"] textarea::placeholder {
   color: var(--text);
   font-size: 14px;
   outline: none;
-}
-
-.task-row .task-check {
-  flex: 0 0 auto;
-  width: 19px;
 }
 
 .task-row input:focus {
@@ -396,81 +359,12 @@ body[data-theme="light"] textarea::placeholder {
   border-color: var(--accent);
 }
 
-.checklist {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.check-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 14px;
-  cursor: pointer;
-  user-select: none;
-}
-
-.check-item input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  accent-color: var(--primary);
-  cursor: pointer;
-}
-
-.quick-win-input-group {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-
-.quick-win-input-group input {
-  flex: 1;
-  background: var(--surface-alt);
-  border: 1px solid var(--border);
-  padding: 8px 12px;
-  border-radius: 8px;
-  color: var(--text);
-  font-size: 13px;
-  outline: none;
-}
-
-.quick-win-list {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.quick-win-list li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: var(--surface-alt);
-  padding: 7px 12px;
-  border-radius: 6px;
-  font-size: 13px;
-}
-
-.win-label { align-items: center; display: flex; gap: 9px; min-width: 0; }
-.win-label input { accent-color: var(--accent); height: 16px; width: 16px; }
-.win-label span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.win-label .completed { color: var(--text-muted); text-decoration: line-through; }
-.empty-state { color: var(--text-muted); font-size: 12px; padding: 3px 2px; }
 .save-status { color: var(--text-muted); font-size: 12px; text-align: center; }
 .form-status { color: var(--accent); font-size: 12px; min-height: 16px; text-align: center; }
-.quick-win-list li button {
-  background: none;
-  border: none;
-  color: var(--text-muted);
-  font-size: 14px;
-  cursor: pointer;
-}
 
-.quick-win-list li button:hover {
-  color: var(--danger);
+.form-status:empty {
+  display: none;
 }
-
 textarea#brainDumpArea {
   width: 100%;
   background: var(--surface-alt);
@@ -527,7 +421,7 @@ textarea#brainDumpArea:focus {
     color: #000;
     padding: 0;
   }
-  .header-actions, button, #turnDumpToTasksBtn, #applySuggestedFlowBtn {
+  .header-actions, button, #applySuggestedFlowBtn {
     display: none !important;
   }
   .card, .hero-card {
@@ -624,15 +518,11 @@ textarea#brainDumpArea:focus {
   .one-thing-box input,
   .task-row input,
   .time-input,
-  .quick-win-input-group input,
   textarea#brainDumpArea {
     font-size: 16px;
   }
 
   .one-thing-box input { min-height: 50px; }
-  .checkable-input > input[type="checkbox"],
-  .task-check { height: 22px; width: 22px; }
-
   .task-list { gap: 8px; }
   .task-row { gap: 9px; }
   .task-row input { min-height: 46px; }
@@ -646,27 +536,6 @@ textarea#brainDumpArea:focus {
   .time-row { gap: 8px; }
   .time-label { flex: 0 0 62px; font-size: 11px; }
   .time-input { min-height: 44px; padding: 9px 10px; }
-
-  .checklist { gap: 4px; }
-  .check-item {
-    min-height: 44px;
-    font-size: 14px;
-    gap: 10px;
-  }
-
-  .check-item input[type="checkbox"],
-  .win-label input {
-    flex: 0 0 auto;
-    height: 22px;
-    width: 22px;
-  }
-
-  .quick-win-input-group { gap: 7px; }
-  .quick-win-input-group input { min-width: 0; min-height: 44px; }
-  .quick-win-input-group .btn-sm { flex: 0 0 58px; }
-  .quick-win-list { gap: 6px; }
-  .quick-win-list li { min-height: 46px; padding: 7px 10px; }
-  .quick-win-list li button { min-height: 38px; min-width: 38px; }
 
   textarea#brainDumpArea {
     min-height: 150px;
